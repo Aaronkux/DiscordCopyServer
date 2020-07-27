@@ -203,7 +203,7 @@ const create_guild = async (ctx, next) => {
         avatar: avatar,
         changeTime: guild.dataValues.changeTime,
         channelsUids: [],
-        usersUids: [userId],
+        usersUids: [Number(userId)],
       },
     ];
     let data = {};
