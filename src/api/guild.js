@@ -206,7 +206,7 @@ const create_guild = async (ctx, next) => {
         usersUids: [userId],
       },
     ];
-    let data;
+    let data = {};
     data.guilds = guilds;
     data.users = [
       {
