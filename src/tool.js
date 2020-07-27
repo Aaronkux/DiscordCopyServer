@@ -13,5 +13,5 @@ function successReturn(data) {
 
 module.exports = {
   uniqueArr,
-  successReturn
+  successReturn,
 }

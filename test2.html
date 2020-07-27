@@ -8,47 +8,44 @@
  -->
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .c {
+        display: flex;
+      }
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-  <style>
-    .c {
-      display: flex;
-    }
+      .item {
+        width: 100px;
+        height: 100px;
+        flex-grow: 1;
+        flex-shrink: 1;
+        flex-basis: 0%;
+      }
 
-    .item {
-      width: 100px;
-      height: 100px;
-      flex-grow: 1;
-      flex-shrink: 1;
-      flex-basis: 0%;
-    }
+      .item1 {
+        flex-basis: 100px;
+      }
+      .r {
+        background-color: red;
+      }
+      .g {
+        background-color: green;
+      }
 
-    .item1 {
-      flex-basis: 100px;
-    }
-    .r {
-      background-color: red;
-    }
-    .g {
-      background-color: green;
-    }
+      .b {
+        background-color: blue;
+      }
+    </style>
+  </head>
 
-    .b {
-      background-color: blue;
-    }
-  </style>
-
-</head>
-
-<body>
-  <div class="c">
-    <div class="item item1 r">1</div>
-    <div class="item g">2</div>
-    <div class="item b">3</div>
-  </div>
-</body>
-
+  <body>
+    <div class="c">
+      <div class="item item1 r">1</div>
+      <div class="item g">2</div>
+      <div class="item b">3</div>
+    </div>
+  </body>
 </html>

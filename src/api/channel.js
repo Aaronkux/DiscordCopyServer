@@ -1,26 +1,26 @@
-const { Guild, Channel } = require("../models/test");
+const { Guild, Channel } = require("../models/test")
 
 const add_channel = async (ctx, next) => {
-  const { name, parentId, type, guildId } = ctx.request.body;
+  const { name, parentId, type, guildId } = ctx.request.body
   const guild = await Guild.findOne({
     where: {
       uid: guildId,
     },
-  });
+  })
   // get the position
-  let position;
+  let position
   if (parentId) {
     const childChannels = await Channel.findAll({
       where: {
         parentId: parentId,
       },
-    });
-    const lastPosition = childChannels.length;
-    position = lastPosition;
+    })
+    const lastPosition = childChannels.length
+    position = lastPosition
   } else {
-    const childChannels = await guild.getChannels();
-    const lastPosition = childChannels.length;
-    position = lastPosition;
+    const childChannels = await guild.getChannels()
+    const lastPosition = childChannels.length
+    position = lastPosition
   }
   // create
   const channel = await Channel.create({
@@ -29,9 +29,9 @@ const add_channel = async (ctx, next) => {
     position,
     parentId,
     uid: Number(Date.now().toString().slice(4)),
-  });
-  guild.addChannels(channel);
-  console.log(channel.dataValues.parentId);
+  })
+  guild.addChannels(channel)
+  console.log(channel.dataValues.parentId)
   const ret = {
     type: 0,
     code: 200,
@@ -44,20 +44,20 @@ const add_channel = async (ctx, next) => {
       parentId: channel.dataValues.parentId,
       messageIds: [],
     },
-  };
-  ctx.response.body = JSON.stringify(ret);
-};
+  }
+  ctx.response.body = JSON.stringify(ret)
+}
 
 const get_channel = async (ctx, next) => {
-  const guild_id = ctx.request.query.id;
+  const guild_id = ctx.request.query.id
   const guild = await Guild.findOne({
     where: {
       uid: guild_id,
     },
-  });
-  const channels = await guild.getChannels();
+  })
+  const channels = await guild.getChannels()
   const channelsRes = channels.map((channel) => {
-    const { name, type, position, uid, parentId } = channel.dataValues;
+    const { name, type, position, uid, parentId } = channel.dataValues
     return {
       name,
       channel_type: type,
@@ -66,17 +66,17 @@ const get_channel = async (ctx, next) => {
       parent_id: parentId,
       guild_id,
       messageIds: [],
-    };
-  });
+    }
+  })
   const ret = {
     type: 0,
     code: 200,
     data: channelsRes,
-  };
-  ctx.response.body = JSON.stringify(ret);
-};
+  }
+  ctx.response.body = JSON.stringify(ret)
+}
 
 module.exports = {
   "POST /channel": add_channel,
   "GET /channel": get_channel,
-};
+}

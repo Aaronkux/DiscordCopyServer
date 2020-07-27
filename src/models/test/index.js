@@ -1,26 +1,26 @@
-const Sequelize = require("sequelize");
-const config = require("../../config/database.config");
+const Sequelize = require("sequelize")
+const config = require("../../config/database.config")
 
 // 实例化，并指定配置
-const sequelize = new Sequelize(config);
-const User = sequelize.import(__dirname + "/User");
-const Guild = sequelize.import(__dirname + "/Guild");
-const Channel = sequelize.import(__dirname + "/Channel");
-const Message = sequelize.import(__dirname + "/Message");
+const sequelize = new Sequelize(config)
+const User = sequelize.import(__dirname + "/User")
+const Guild = sequelize.import(__dirname + "/Guild")
+const Channel = sequelize.import(__dirname + "/Channel")
+const Message = sequelize.import(__dirname + "/Message")
 
-User.belongsToMany(Guild, { through: "UserGuild" });
-Guild.belongsToMany(User, { through: "UserGuild" });
+User.belongsToMany(Guild, { through: "UserGuild" })
+Guild.belongsToMany(User, { through: "UserGuild" })
 
-Guild.hasMany(Channel, { onDelete: "cascade" });
-Channel.belongsTo(Guild);
+Guild.hasMany(Channel, { onDelete: "cascade" })
+Channel.belongsTo(Guild)
 
-Channel.hasMany(Message, { onDelete: "cascade" });
-Message.belongsTo(Channel);
+Channel.hasMany(Message, { onDelete: "cascade" })
+Message.belongsTo(Channel)
 
 async function initialize(sequelize) {
   try {
-    await sequelize.drop();
-    await sequelize.sync({ alter: true }); // { alter: true }
+    await sequelize.drop()
+    await sequelize.sync({ alter: true }) // { alter: true }
     // User
     // const user = await User.create({ username: 'admin', name: 'alex', email: 'sbvjaiwxd@gmail.com', password: '123', uid: Number(Date.now().toString().slice(4))})
     // const user2 = await User.create({ username: 'test', name: 'aaron', email: '353045905@qq.com', password: '123', uid: Number(Date.now().toString().slice(4))})
@@ -36,7 +36,7 @@ async function initialize(sequelize) {
     // await guild1.addUsers(user2)
     // await guild2.addUsers(user)
   } catch (err) {
-    console.log(err);
+    console.log(err)
   }
 }
 // initialize(sequelize)
@@ -56,4 +56,4 @@ module.exports = {
   Guild,
   Channel,
   Message,
-};
+}
