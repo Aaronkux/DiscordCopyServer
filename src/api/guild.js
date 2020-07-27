@@ -1,5 +1,6 @@
 const { User, Guild } = require("../models/test");
 const multer = require("@koa/multer");
+const { successReturn } = require('../tool')
 
 const storage = multer.diskStorage({
   destination: function (req, file, callback) {
@@ -10,6 +11,54 @@ const storage = multer.diskStorage({
     cb(null, `avatar_${Date.now()}.${file.originalname.split(".")[1]}`);
   },
 });
+
+const getFromUsersRaw = (usersRaw) => {
+  const users = usersRaw.map((userRaw) => {
+    const { name, avatar, uid } = userRaw;
+    return {
+      name,
+      avatar,
+      uid,
+    };
+  });
+  const usersUids = users.map((user) => user.uid);
+  return [users, usersUids]
+}
+
+const getFromChannelsRaw = (channelsRaw) => {
+  const channels = channelsRaw.map((channelRaw) => {
+    const {
+      name,
+      type: channelType,
+      position,
+      parentId,
+      uid,
+      guildId,
+    } = channelRaw.dataValues;
+    return {
+      name,
+      channelType,
+      position,
+      uid,
+      parentId,
+      guildId,
+      messageIds: [],
+    };
+  });
+  const channelsUids = channels.map((channel) => channel.uid);
+
+  return [channels, channelsUids]
+}
+
+// const singleGuildDataProcess = (data) => {
+//   let data = {
+//     guilds: [],
+//     channels: [],
+//     users: [],
+//   };
+
+
+// }
 
 const upload = multer({ storage: storage }).single("file");
 
@@ -37,52 +86,25 @@ const get_all_guild = async (ctx, next) => {
     channels: [],
     users: [],
   };
+  //info.user 去重
   let addedUser = new Set();
+  //循环遍历guilds
   for (let guild of guilds) {
     const { name, uid, avatar, changeTime, owner } = guild.dataValues;
     //获取当前工会所有会员
     const usersRaw = await guild.getUsers();
-    const users = usersRaw.map((userRaw) => {
-      const { name, avatar, uid } = userRaw;
-      return {
-        name,
-        avatar,
-        uid,
-      };
-    });
-    //获取当前工会所有channel
-    const channelsRaw = await guild.getChannels();
-    const channels = channelsRaw.map((channelRaw) => {
-      const {
-        name,
-        type: channelType,
-        position,
-        parentId,
-        uid,
-        guildId,
-      } = channelRaw.dataValues;
-      return {
-        name,
-        channelType,
-        position,
-        uid,
-        parentId,
-        guildId,
-        messageIds: [],
-      };
-    });
-    //获取channelId集合
-    const channelsUids = channels.map((channel) => channel.uid);
-    //获取userId集合
-    const usersUids = [];
+    const [users, usersUids] = getFromUsersRaw(usersRaw)
     for (let user of users) {
-      usersUids.push(user.uid);
-
       if (!addedUser.has(user.uid)) {
         addedUser.add(user.uid);
         data.users.push(user);
       }
     }
+
+    //获取当前工会所有channel
+    const channelsRaw = await guild.getChannels();
+    const [channels, channelsUids] = getFromChannelsRaw(channelsRaw)
+
     data.guilds.push({
       name,
       owner,
@@ -94,14 +116,8 @@ const get_all_guild = async (ctx, next) => {
     });
     data.channels = data.channels.concat(channels);
   }
-  const ret = {
-    type: 0,
-    code: 200,
-    msg: "ok",
-    data,
-  };
-  // ctx.response.body = JSON.stringify(ret);
-  return ret;
+
+  return successReturn(data);
 };
 
 const get_guild = async (ctx, next) => {
@@ -123,36 +139,11 @@ const get_guild = async (ctx, next) => {
     const { name, uid, avatar, changeTime, owner } = guild.dataValues;
     //获取当前工会所有会员
     const usersRaw = await guild.getUsers();
-    const users = usersRaw.map((userRaw) => {
-      const { name, avatar, uid } = userRaw;
-      return {
-        name,
-        avatar,
-        uid,
-      };
-    });
+    const [users, usersUids] = getFromUsersRaw(usersRaw)
+
     const channelsRaw = await guild.getChannels();
-    const channels = channelsRaw.map((channelRaw) => {
-      const {
-        name,
-        type,
-        position,
-        parentId,
-        uid,
-        guildId,
-      } = channelRaw.dataValues;
-      return {
-        name,
-        channelType: type,
-        position,
-        uid,
-        parentId,
-        guildId,
-        messageIds: [],
-      };
-    });
-    const channelsUids = channels.map((channel) => channel.uid);
-    const usersUids = users.map((user) => user.uid);
+    const [channels, channelsUids] = getFromChannelsRaw(channelsRaw)
+
     data.users = users;
     data.channels = channels;
     data.guilds.push({
@@ -165,13 +156,8 @@ const get_guild = async (ctx, next) => {
       usersUids,
     });
   }
-  const ret = {
-    type: 0,
-    code: 200,
-    msg: "ok",
-    data,
-  };
-  return ret;
+
+  return successReturn(data);
 };
 
 const create_guild = async (ctx, next) => {
@@ -215,13 +201,7 @@ const create_guild = async (ctx, next) => {
         uid: user.dataValues.uid,
       },
     ];
-    const ret = {
-      type: 0,
-      code: 200,
-      msg: "ok",
-      data,
-    };
-    ctx.response.body = JSON.stringify(ret);
+    ctx.response.body = JSON.stringify(successReturn(data));
   } catch (error) {
     console.log(error);
   }
@@ -262,19 +242,15 @@ const update_guild = async (ctx, next) => {
     },
   });
   const { avatar, changeTime } = newGuild.dataValues;
-  const ret = {
-    type: 0,
-    code: 200,
-    msg: "ok",
-    data: {
-      name,
-      changeTime,
-      uid: guildId,
-      avatar: avatar,
-    },
-  };
-  ctx.response.body = JSON.stringify(ret);
+  const data = {
+    name,
+    changeTime,
+    uid: guildId,
+    avatar
+  }
+  ctx.response.body = JSON.stringify(successReturn(data));
 };
+
 module.exports = {
   "GET /guild": get_guild_flow,
   "POST /guild": {
