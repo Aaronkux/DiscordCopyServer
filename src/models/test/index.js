@@ -2,11 +2,12 @@ const Sequelize = require("sequelize")
 const config = require("../../config/database.config")
 
 // 实例化，并指定配置
-const sequelize = new Sequelize(config)
-const User = sequelize.import(__dirname + "/User")
-const Guild = sequelize.import(__dirname + "/Guild")
-const Channel = sequelize.import(__dirname + "/Channel")
-const Message = sequelize.import(__dirname + "/Message")
+const sequelize = new Sequelize(config);
+const User = sequelize.import(__dirname + "/User");
+const Guild = sequelize.import(__dirname + "/Guild");
+const Channel = sequelize.import(__dirname + "/Channel");
+const Message = sequelize.import(__dirname + "/Message");
+const InviteLink = sequelize.import(__dirname + "/InviteLink");
 
 User.belongsToMany(Guild, { through: "UserGuild" })
 Guild.belongsToMany(User, { through: "UserGuild" })
@@ -16,6 +17,9 @@ Channel.belongsTo(Guild)
 
 Channel.hasMany(Message, { onDelete: "cascade" })
 Message.belongsTo(Channel)
+
+Guild.hasMany(InviteLink, { onDelete: "cascade" });
+InviteLink.belongsTo(Guild);
 
 async function initialize(sequelize) {
   try {
