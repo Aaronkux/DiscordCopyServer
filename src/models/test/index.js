@@ -60,4 +60,5 @@ module.exports = {
   Guild,
   Channel,
   Message,
+  InviteLink
 }
