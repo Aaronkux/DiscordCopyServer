@@ -1,6 +1,6 @@
 const { User, Guild } = require("../models/test")
 const multer = require("@koa/multer")
-const { successReturn } = require("../tool")
+const { successReturn, getFromUsersRaw, getFromChannelsRaw } = require("../tool")
 
 const storage = multer.diskStorage({
   destination: function (req, file, callback) {
@@ -11,53 +11,6 @@ const storage = multer.diskStorage({
     cb(null, `avatar_${Date.now()}.${file.originalname.split(".")[1]}`)
   },
 })
-
-const getFromUsersRaw = (usersRaw) => {
-  const users = usersRaw.map((userRaw) => {
-    const { name, avatar, uid } = userRaw
-    return {
-      name,
-      avatar,
-      uid,
-    }
-  })
-  const usersUids = users.map((user) => user.uid)
-  return [users, usersUids]
-}
-
-const getFromChannelsRaw = (channelsRaw) => {
-  const channels = channelsRaw.map((channelRaw) => {
-    const {
-      name,
-      type: channelType,
-      position,
-      parentId,
-      uid,
-      guildId,
-    } = channelRaw.dataValues
-    return {
-      name,
-      channelType,
-      position,
-      uid,
-      parentId,
-      guildId,
-      messageIds: [],
-    }
-  })
-  const channelsUids = channels.map((channel) => channel.uid)
-
-  return [channels, channelsUids]
-}
-
-// const singleGuildDataProcess = (data) => {
-//   let data = {
-//     guilds: [],
-//     channels: [],
-//     users: [],
-//   };
-
-// }
 
 const upload = multer({ storage: storage }).single("file")
 

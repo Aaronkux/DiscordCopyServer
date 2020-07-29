@@ -61,7 +61,7 @@ app.use(cors())
 // jwt auth
 app.use(
   jwt({ secret: "hahaha" }).unless({
-    path: [/^\/api\/v1\/login/, /^\/api\/v1\/register/, /^\/api\/v1\/auth/],
+    path: [/^\/api\/v1\/login/, /^\/api\/v1\/register/, /^\/api\/v1\/auth/, /^\/api\/v1\/joinLink/],
   })
 )
 
