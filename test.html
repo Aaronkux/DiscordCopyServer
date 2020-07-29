@@ -19,11 +19,11 @@
   <script>
     window.onload = () => {
       axios
-        .patch(
-          "http://localhost:3001/api/v1/message?channelId=430289632&lastMessageId=890790377&offset=1",
+        .post(
+          "http://localhost:3001/api/v1/joinLink",
           {
-            guildId: 277756955,
-            name: "new last one",
+            userId: 12000503,
+            linkCode: "NJ_DXmDFy",
           },
           {
             headers: {
