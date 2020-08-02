@@ -6,6 +6,27 @@ const {
   getFromChannelsRaw,
 } = require("../tool")
 
+const get_link = async (ctx, next) => {
+  const guildId = ctx.request.query.guildId
+  const guild = await Guild.findOne({
+    where: {
+      uid: guildId,
+    },
+  })
+  if (!guild) {
+    ctx.response.body = JSON.stringify(failReturn(404, `guildId invalid`))
+    return
+  }
+
+  const links = await guild.getInvitelinks()
+  let data = []
+  links.map((item) => {
+    const { link, userId, slots, id } = item
+    data.push({ link, userId, slots, id, guildId: Number(guildId) })
+  })
+  ctx.response.body = JSON.stringify(successReturn(data))
+}
+
 const create_link = async (ctx, next) => {
   const { guildId, userId, slots } = ctx.request.body
   const guild = await Guild.findOne({
@@ -36,6 +57,8 @@ const create_link = async (ctx, next) => {
     link: linkCode,
     userId,
     slots,
+    guildId,
+    id: newLink.id,
   }
   ctx.response.body = JSON.stringify(successReturn(data))
 }
@@ -61,8 +84,8 @@ const join_link = async (ctx, next) => {
     ctx.response.body = JSON.stringify(failReturn(404, `user not find`))
     return
   }
-  user.addGuilds(guild)
-  guild.addUsers(user)
+  await user.addGuilds(guild)
+  await guild.addUsers(user)
 
   link.slots -= 1
   await link.save()
@@ -95,6 +118,7 @@ const join_link = async (ctx, next) => {
 }
 
 module.exports = {
+  "GET /invite": get_link,
   "POST /invite": create_link,
   "POST /joinLink": join_link,
 }
