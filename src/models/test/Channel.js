@@ -36,6 +36,6 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       modelName: "channel",
     }
-  );
-  return Channel;
-};
+  )
+  return Channel
+}

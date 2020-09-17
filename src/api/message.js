@@ -9,8 +9,8 @@ const get_message = async (ctx, next) => {
   const offset = Number(ctx.request.query.offset) || 0
   // for newest fetch
   const lastMessageId = ctx.request.query.lastMessageId
-  ? Number(ctx.request.query.lastMessageId)
-  : null
+    ? Number(ctx.request.query.lastMessageId)
+    : null
   // for limit
   const limit = lastMessageId ? 9999 : Number(ctx.request.query.limit) || 50
 

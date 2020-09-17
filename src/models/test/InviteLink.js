@@ -1,6 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
-  class Message extends sequelize.Sequelize.Model {}
-  Message.init(
+  class InviteLink extends sequelize.Sequelize.Model {}
+  InviteLink.init(
     {
       id: {
         type: DataTypes.INTEGER(11),
@@ -8,22 +8,16 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         autoIncrement: true,
       },
-      content: {
+      userId: {
+        type: DataTypes.INTEGER(13),
+        allowNull: false,
+      },
+      slots: {
+        type: DataTypes.INTEGER(13),
+        allowNull: false,
+      },
+      link: {
         type: DataTypes.STRING,
-        allowNull: false,
-      },
-      // user uid
-      owner: {
-        type: DataTypes.INTEGER(13),
-        allowNull: false,
-      },
-      // channel uid
-      parentId: {
-        type: DataTypes.INTEGER(13),
-        allowNull: false,
-      },
-      uid: {
-        type: DataTypes.INTEGER(13),
         allowNull: false,
         unique: true,
       },
@@ -31,8 +25,8 @@ module.exports = (sequelize, DataTypes) => {
     {
       underscored: true,
       sequelize,
-      modelName: "message",
+      modelName: "invitelink",
     }
   )
-  return Message
+  return InviteLink
 }
